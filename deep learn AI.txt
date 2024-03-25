@@ -1,0 +1,73 @@
+from flask import Flask, render_template, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+# Routes
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/process_topic', methods=['POST'])
+def process_topic():
+    topic = request.form.get('topic')
+    keywords = request.form.get('keywords')
+
+    # Call function to process topic and keywords
+    result = get_deep_info(topic, keywords)
+    
+    return jsonify(result)
+
+def get_deep_info(topic, keywords):
+    # Use any API or web scraping to get in-depth information on the topic
+    # You can also process the keywords to find relevant information
+    # For demonstration purposes, I'll just return a placeholder response
+    return {"topic": topic, "keywords": keywords, "result": "Placeholder deep information."}
+
+if __name__ == '__main__':
+    app.run(debug=True)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepBrain AI</title>
+</head>
+<body>
+    <h1>Welcome to DeepBrain AI</h1>
+    <form id="topicForm">
+        <label for="topic">Enter Topic:</label>
+        <input type="text" id="topic" name="topic"><br><br>
+        <label for="keywords">Enter Keywords:</label>
+        <input type="text" id="keywords" name="keywords"><br><br>
+        <input type="submit" value="Submit" id="submitBtn">
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('topicForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var topic = document.getElementById('topic').value;
+            var keywords = document.getElementById('keywords').value;
+
+            fetch('/process_topic', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'topic': topic,
+                    'keywords': keywords
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = data.result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
